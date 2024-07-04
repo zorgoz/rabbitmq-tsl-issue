@@ -1,0 +1,11 @@
+FROM alpine:latest
+
+RUN apk add --no-cache openssl bash
+
+COPY *.sh /usr/local/bin/
+
+# Make sure the scripts are executable
+RUN chmod +x /usr/local/bin/*.sh 
+
+# Define the command to run the scripts
+CMD ["/bin/sh", "-c", "cd /certs && /usr/local/bin/create.sh"]

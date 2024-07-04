@@ -1,0 +1,74 @@
+name: rmr-tsl-test
+
+services:
+  certs:
+   image: ${DOCKER_REGISTRY-}cert-maker
+   container_name: cert-maker
+   build:
+      context: cert-maker
+      dockerfile: Dockerfile
+   volumes:
+     - certs:/certs # Mount the directory containing certificates
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_CONFIG_FILE: /etc/rabbitmq/rabbitmq.conf
+    ports:
+      - 5672:5672 # AMQP port
+      - 15672:15672 # UI
+      - 5671:5671 # SSL port
+    volumes:
+      - ./rmq-config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rmq-config/rabbitmq_definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./rmq-config/rabbitmq_enabled_plugins.txt:/etc/rabbitmq/enabled_plugins:ro
+      - certs:/certs # Mount the directory containing certificates
+    networks:
+      - test
+    depends_on:
+      certs:
+       condition: service_completed_successfully
+  
+  test:
+    image: ${DOCKER_REGISTRY-}rmq-tsl-test
+    container_name: test-container
+    tty: true
+    build:
+      context: .
+      dockerfile: rmq-tsl-test\Dockerfile 
+    volumes:
+      - certs:/certs # Mount the directory containing certificates 
+    depends_on:
+      rabbitmq:
+        condition: service_healthy 
+    networks:
+      - test
+
+  nmap:
+    image: instrumentisto/nmap:latest
+    container_name: nmap
+    command: "nmap --script ssl-enum-ciphers -p 5671 rabbitmq"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy 
+    networks:
+      - test
+
+networks:
+  test:
+     driver: bridge
+
+volumes:
+  certs:
+     driver: local
+     driver_opts:
+       type: 'none'
+       o: 'bind'
+       device: './certs'
