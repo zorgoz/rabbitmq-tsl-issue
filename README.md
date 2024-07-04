@@ -19,7 +19,7 @@ The 'rmq-config\rabbitmq.conf' file is used as configuration, that has these opt
 
 ```
 ssl_options.versions.1 = tlsv1.2
-ssl_options.versions.1 = tlsv1.3
+ssl_options.versions.2 = tlsv1.3
 ```
 
 ### test-container
