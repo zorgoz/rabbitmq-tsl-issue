@@ -1,5 +1,5 @@
 # Summary
-Repository created to demonstrate the issue related to connecting without tsl1v.3 support
+Repository created to demonstrate the issue related to connecting without tls1v.3 support
 
 ## Issue
 - Even if the configuration contains support for tlsv1.2, the image seems to be not exposing any support for it.
@@ -38,7 +38,7 @@ With the defaulkt configuration, it will have the following log:
 ```
 2024-07-04 14:02:17 Nmap scan report for rabbitmq (172.21.0.2)
 2024-07-04 14:02:17 Host is up (0.000063s latency).
-2024-07-04 14:02:17 rDNS record for 172.21.0.2: rabbitmq.rmr-tsl-test_test
+2024-07-04 14:02:17 rDNS record for 172.21.0.2: rabbitmq.rmr-tls-test_test
 2024-07-04 14:02:17 
 2024-07-04 14:02:17 PORT     STATE SERVICE
 2024-07-04 14:02:17 5671/tcp open  amqps
@@ -73,7 +73,7 @@ Just alter the `docker-compose.yml` to this and rebuild all:
 **The test will fail, and NMAP won't report any TLS support at all**
 
 ### Finding 2
-if you change directory into `rmq-tsl-test` amd issue `dotnet run` from the Windows host, you will get error either way.
+if you change directory into `rmq-tls-test` amd issue `dotnet run` from the Windows host, you will get error either way.
 More precisely:
 ```
 BrokerUnreachableException: None of the specified endpoints were reachable
