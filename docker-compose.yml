@@ -11,7 +11,7 @@ services:
      - certs:/certs # Mount the directory containing certificates
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3.13.4-management-alpine
     hostname: rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
